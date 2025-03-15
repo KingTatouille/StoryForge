@@ -104,4 +104,8 @@ Distribué sous la licence MIT. Voir `LICENSE` pour plus d'informations.
 
 ---
 
+<<<<<<< HEAD
 Créé avec ❤️ pour les amateurs d'histoires et les créateurs en herbe.
+=======
+Créé avec ❤️ pour les amateurs d'histoires et les créateurs en herbe.
+>>>>>>> f7fa8038a5a344c52a7d8f653b19aacb6f70eebf
