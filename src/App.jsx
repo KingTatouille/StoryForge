@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { generateStory } from './utils/storyGenerator';
 import { SETTINGS, OBJECTS } from './data/constants';
+import { generateStory } from './utils/storyGenerator';
+import { generateAIStory } from './utils/StoryForgeAI';
+import { generateTemplateStory } from './utils/StoryTemplateEngine';
+
 
 function App() {
   // États pour les paramètres de l'histoire
@@ -28,6 +31,7 @@ function App() {
   const [notification, setNotification] = useState(null);
   const [generatedStory, setGeneratedStory] = useState(null);
   const [showAdvanced, setShowAdvanced] = useState(false);
+  const [generatorType, setGeneratorType] = useState('template');
   
   // Initialisation du personnage principal lors du chargement initial
   useEffect(() => {
@@ -154,7 +158,7 @@ function App() {
   // Fonction principale pour générer l'histoire
   const handleGenerateStory = () => {
     try {
-      // Vérification de base
+      // Vérifications de base
       if (characters.length === 0) {
         showNotification("Ajoutez au moins un personnage!", "error");
         return;
@@ -185,10 +189,22 @@ function App() {
       
       // Simuler un délai pour l'effet de chargement
       setTimeout(() => {
-        const result = generateStory(storyOptions);
+        // Sélectionner le générateur approprié
+        let result;
         
-        // Ajouter l'époque déterminée à partir de l'ère
-        result.era = determineYear(settings.era);
+        switch(generatorType) {
+          case 'simple':
+            result = generateStory(storyOptions);
+            break;
+          case 'ai':
+            result = generateAIStory(storyOptions);
+            break;
+          case 'template':
+            result = generateTemplateStory(storyOptions);
+            break;
+          default:
+            result = generateTemplateStory(storyOptions);
+        }
         
         setGeneratedStory(result);
         setIsLoading(false);
@@ -614,6 +630,65 @@ function App() {
                     <option key={theme.value} value={theme.value}>{theme.text}</option>
                   ))}
                 </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden mb-8">
+          <div className="p-6">
+            <h2 className="text-2xl font-bold mb-6 text-indigo-600 dark:text-indigo-400">Mode de génération</h2>
+                        
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div 
+                className={`p-4 rounded-lg cursor-pointer border-2 transition-all ${
+                  generatorType === 'simple' 
+                    ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900' 
+                    : 'border-gray-200 dark:border-gray-700'
+                }`}
+                onClick={() => setGeneratorType('simple')}
+              >
+                <div className="flex flex-col items-center text-center">
+                  <i className="fas fa-cogs text-2xl mb-2"></i>
+                  <h3 className="font-semibold">Générateur Simple</h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    Utilise des modèles simples pour générer des histoires basiques.
+                  </p>
+                </div>
+              </div>
+              
+              <div 
+                className={`p-4 rounded-lg cursor-pointer border-2 transition-all ${
+                  generatorType === 'ai' 
+                    ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900' 
+                    : 'border-gray-200 dark:border-gray-700'
+                }`}
+                onClick={() => setGeneratorType('ai')}
+              >
+                <div className="flex flex-col items-center text-center">
+                  <i className="fas fa-brain text-2xl mb-2"></i>
+                  <h3 className="font-semibold">IA Créative</h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    Utilise notre moteur d'IA pour créer des histoires variées (expérimental).
+                  </p>
+                </div>
+              </div>
+              
+              <div 
+                className={`p-4 rounded-lg cursor-pointer border-2 transition-all ${
+                  generatorType === 'template' 
+                    ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900' 
+                    : 'border-gray-200 dark:border-gray-700'
+                }`}
+                onClick={() => setGeneratorType('template')}
+              >
+                <div className="flex flex-col items-center text-center">
+                  <i className="fas fa-book-open text-2xl mb-2"></i>
+                  <h3 className="font-semibold">Narration Immersive</h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    Utilise des trames narratives complètes pour des histoires riches et cohérentes.
+                  </p>
+                </div>
               </div>
             </div>
           </div>
